@@ -1,14 +1,18 @@
 import { Suspense, lazy } from "react";
+import AuthShell from "@/components/auth/AuthShell";
+
 const LoginForm = lazy(() => import("@/components/login-form"));
 
 export default function Page() {
   return (
-      <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
-        <Suspense fallback={<p className="text-black">Cargando login...</p>}>
+    <Suspense fallback={<p className="text-white text-center mt-10">Cargando login...</p>}>
+      <AuthShell title="Inicia sesión" subtitle="Bienvenido de nuevo a AWSCineBox">
+        <div className="flex justify-center">
           <div className="w-full max-w-sm">
-              <LoginForm />
+            <LoginForm />
           </div>
-        </Suspense>
-      </div>
+        </div>
+      </AuthShell>
+    </Suspense>
   );
 }

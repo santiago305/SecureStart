@@ -12,24 +12,20 @@ import { RouteObject } from "react-router-dom";
 import { lazy } from "react";
 
 const Home = lazy(() => import("@/pages/Home"));
+const Peliculas = lazy(() => import("@/pages/Peliculas"));
+const Categorias = lazy(() => import("@/pages/Categorias"));
+const Noticias = lazy(() => import("@/pages/Noticias"));
+const NoticiasDetalle = lazy(() => import("@/pages/NoticiasDetalle"));
 const About = lazy(() => import("@/pages/About"));
 const Contact = lazy(() => import("@/pages/Contact"));
 const ErrorPage = lazy(() => import("@/pages/Error404"));
 
 export const publicRoutes: RouteObject[] = [
-  {
-    path: RoutesPaths.home,
-    element: <Home />,
-    errorElement: <ErrorPage />,
-  },
-  {
-    path: RoutesPaths.about,
-    element: <About />,
-    errorElement: <ErrorPage />,
-  },
-  {
-    path: RoutesPaths.contact,
-    element: <Contact />,
-    errorElement: <ErrorPage />,
-  },
+  { path: RoutesPaths.home, element: <Home />, errorElement: <ErrorPage /> },
+  { path: RoutesPaths.movies, element: <Peliculas />, errorElement: <ErrorPage /> },
+  { path: RoutesPaths.categories, element: <Categorias />, errorElement: <ErrorPage /> },
+  { path: RoutesPaths.news, element: <Noticias />, errorElement: <ErrorPage /> },
+  { path: RoutesPaths.newsDetail(), element: <NoticiasDetalle />, errorElement: <ErrorPage /> },
+  { path: RoutesPaths.about, element: <About />, errorElement: <ErrorPage /> },
+  { path: RoutesPaths.contact, element: <Contact />, errorElement: <ErrorPage /> },
 ];
