@@ -10,7 +10,7 @@ import { LoginSchema } from "@/schemas/authSchemas";
 import { useAuth } from "@/hooks/useAuth";
 import FormField from "./ui/formField";
 import { useFlashMessage } from "@/hooks/useFlashMessage";
-import { RoutesPaths } from "@/router/config/routesPaths";
+import { RoutesPaths } from "@/Router/config/routesPaths";
 import { errorResponse, successResponse } from "@/common/utils/response";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

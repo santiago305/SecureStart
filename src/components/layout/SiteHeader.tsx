@@ -2,7 +2,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { LogOut, User2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { RoutesPaths } from "@/router/config/routesPaths";
+import { RoutesPaths } from "@/Router/config/routesPaths";
 
 const useSession = () => {
   const [token, setToken] = useState<string | null>(localStorage.getItem("token"));

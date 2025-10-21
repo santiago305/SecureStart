@@ -14,7 +14,7 @@ import { fullRegisterCredentials } from "@/types/auth";
 import { useAuth } from "@/hooks/useAuth";
 import { useFlashMessage } from "@/hooks/useFlashMessage";
 import { errorResponse, successResponse } from "@/common/utils/response";
-import { RoutesPaths } from "@/router/config/routesPaths";
+import { RoutesPaths } from "@/Router/config/routesPaths";
 import { useNavigate, Link } from "react-router-dom";
 
 function RegisterForm({ className, ...props }: React.ComponentProps<"div">) {

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { RoutesPaths } from "@/router/config/routesPaths";
+import { RoutesPaths } from "@/Router/config/routesPaths";
 
 export default function SiteFooter() {
   return (
