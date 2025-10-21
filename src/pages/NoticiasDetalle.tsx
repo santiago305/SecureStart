@@ -3,7 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { Calendar, ArrowLeft } from "lucide-react";
 import SiteHeader from "@/components/layout/SiteHeader";
 import SiteFooter from "@/components/layout/SiteFooter";
-import { RoutesPaths } from "@/router/config/routesPaths";
+import { RoutesPaths } from "@/Router/config/routesPaths";
 
 export default function NoticiasDetalle() {
   useEffect(() => {

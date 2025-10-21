@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Calendar } from "lucide-react";
 import SiteHeader from "@/components/layout/SiteHeader";
 import SiteFooter from "@/components/layout/SiteFooter";
-import { RoutesPaths } from "@/router/config/routesPaths";
+import { RoutesPaths } from "@/Router/config/routesPaths";
 
 type News = {
   id: number;

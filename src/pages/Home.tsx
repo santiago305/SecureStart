@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Search, Play, Calendar } from "lucide-react";
 import braveHero from "@/assets/images/Brave2.jpg";
-import { RoutesPaths } from "@/router/config/routesPaths";
+import { RoutesPaths } from "@/Router/config/routesPaths";
 import ShimmerLoader from "@/components/loadings.tsx/ShimmerLoader";
 import SiteHeader from "@/components/layout/SiteHeader";
 import SiteFooter from "@/components/layout/SiteFooter";
