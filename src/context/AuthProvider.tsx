@@ -72,6 +72,17 @@ export const AuthProvider = ({ children }: PropsUrl) => {
    */
   const login = async (payload: LoginCredentials): Promise<AuthResponse> => {
     try {
+      // Demo admin login (sin backend) para previsualizar el panel de admin
+      if (
+        payload.email === "admin@securestart.com" &&
+        payload.password === "admin123"
+      ) {
+        setIsAuthenticated(true);
+        setUserRole('admin');
+        setHasClient(null);
+        return { success: true, message: "Inicio de sesión como Admin (demo)", data: { role: 'admin' } };
+      }
+
       const data = await loginUser(payload);
       if (data?.access_token) {
         await checkAuth();

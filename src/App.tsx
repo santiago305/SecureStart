@@ -1,6 +1,7 @@
 import { FlashMessageRoot } from './components/flashMessage/FlashMessageRoot'
 import { AuthProvider } from './context/AuthProvider'
 import { FlashMessageProvider } from './context/FlashMessageProvider'
+import { Toaster } from "@/components/ui/sonner"
 import './globals.css'
 /**
  * Componente raíz de la aplicación.
@@ -19,6 +20,7 @@ function App({ children }: { children: React.ReactNode }) {
     <AuthProvider>
       <FlashMessageProvider>
         <FlashMessageRoot />
+        <Toaster position="top-right" richColors />
           {children}
       </FlashMessageProvider>
     </AuthProvider>

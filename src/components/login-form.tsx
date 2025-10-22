@@ -34,7 +34,12 @@ function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
       const response = await login(data);
       if (response.success) {
         showFlash(successResponse(response.message));
-        navigate(RoutesPaths.home, { replace: true });
+        const role = response.data?.role as string | undefined;
+        if (role === 'admin') {
+          navigate(RoutesPaths.dashboardAdmin, { replace: true });
+        } else {
+          navigate(RoutesPaths.home, { replace: true });
+        }
       } else {
         showFlash(errorResponse(response.message));
       }

@@ -17,6 +17,7 @@ export const RoutesPaths = {
 
   // Dashboard
   dashboard: "/dashboard",
+  dashboardAdmin: "/dashboard/admin",
   dashboardProducts: "/dashboard/products",
   dashboardProductShow: (id: string) => `/dashboard/products/${id}`,
   dashboardProfile: "/dashboard/profile",
