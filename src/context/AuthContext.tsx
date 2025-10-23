@@ -12,6 +12,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   userRole: string | null;
   hasClient: boolean | null;
+  userName: string | null;
   login: (payload: LoginCredentials) => Promise<AuthResponse>;
   clientUserRegister: (payload: RegisterCredentials) => Promise<AuthResponse>;
   logout: () => void;

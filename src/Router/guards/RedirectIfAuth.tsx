@@ -1,6 +1,6 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { PropsUrl } from "@/router/guards/typeGuards";
+import { PropsUrl } from "@/Router/guards/typeGuards";
 
 /**
  * Guardián de Rutas de Autenticación.
@@ -20,7 +20,10 @@ import { PropsUrl } from "@/router/guards/typeGuards";
  * </RedirectIfAuth>
  */
 const RedirectIfAuth = ({ children }: PropsUrl) => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
+
+  // Mientras se verifica la sesión, no redirigir
+  if (loading) return children;
 
   if (isAuthenticated) return <Navigate to="/" replace />;
   

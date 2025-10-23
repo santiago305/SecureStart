@@ -1,37 +1,12 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { LogOut, User2 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { RoutesPaths } from "@/Router/config/routesPaths";
-
-const useSession = () => {
-  const [token, setToken] = useState<string | null>(localStorage.getItem("token"));
-  const [name, setName] = useState<string>(localStorage.getItem("userName") ?? "Invitad@");
-
-  useEffect(() => {
-    const updateSession = () => {
-      setToken(localStorage.getItem("token"));
-      setName(localStorage.getItem("userName") ?? "Invitad@");
-    };
-    window.addEventListener("storage", updateSession);
-    window.addEventListener("session-updated", updateSession);
-    return () => {
-      window.removeEventListener("storage", updateSession);
-      window.removeEventListener("session-updated", updateSession);
-    };
-  }, []);
-
-  const isAuth = Boolean(token);
-  const initials = useMemo(() => {
-    const parts = (name || "").split(" ").filter(Boolean);
-    return (parts[0]?.[0] ?? "U").toUpperCase() + (parts[1]?.[0] ?? "").toUpperCase();
-  }, [name]);
-
-  return { isAuth, name, initials };
-};
+import { useAuth } from "@/hooks/useAuth";
 
 export default function SiteHeader() {
-  const { isAuth, name, initials } = useSession();
+  const { isAuthenticated, userName, userRole, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -60,11 +35,13 @@ export default function SiteHeader() {
 
   const goHome = () => goTo(RoutesPaths.home);
 
+  const initials = useMemo(() => {
+    const parts = (userName || "Invitad@").split(" ").filter(Boolean);
+    return (parts[0]?.[0] ?? "U").toUpperCase() + (parts[1]?.[0] ?? "").toUpperCase();
+  }, [userName]);
+
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("role");
-    localStorage.removeItem("userName");
-    window.dispatchEvent(new Event("session-updated"));
+    logout();
     goTo(RoutesPaths.home, true);
   };
 
@@ -114,14 +91,22 @@ export default function SiteHeader() {
 
             {/* Cuenta/Login */}
             <div className="flex items-center gap-2">
-              {isAuth ? (
+              {isAuthenticated && (userRole === 'admin' || userRole === 'moderator') && (
+                <button
+                  onClick={() => goTo(RoutesPaths.dashboardAdmin)}
+                  className="hidden sm:inline-flex rounded-full bg-[#007AFF] px-3 py-1.5 text-xs sm:text-sm font-semibold text-black hover:brightness-110"
+                >
+                  Panel Admin
+                </button>
+              )}
+              {isAuthenticated ? (
                 <DropdownMenu.Root>
                   <DropdownMenu.Trigger asChild>
                     <button className="flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 hover:bg-white/15">
                       <div className="grid h-8 w-8 place-content-center rounded-full bg-[#007AFF] text-black font-bold">
                         {initials}
                       </div>
-                      <span className="hidden sm:block text-sm">{name}</span>
+                      <span className="hidden sm:block text-sm">{userName ?? "Invitad@"}</span>
                     </button>
                   </DropdownMenu.Trigger>
 
@@ -132,13 +117,13 @@ export default function SiteHeader() {
                     >
                       <DropdownMenu.Item
                         onClick={() => goTo("/profile")}
-                        className="flex items-center gap-2 rounded-md px-3 py-2 cursor-pointer outline-none hover:bg-white/10"
+                        className="flex items-center gap-2 rounded-md px-3 py-2 cursor-pointer outline-none hover:bg-white/10 text-white"
                       >
                         <User2 size={16} /> Mi cuenta
                       </DropdownMenu.Item>
                       <DropdownMenu.Item
                         onClick={handleLogout}
-                        className="flex items-center gap-2 rounded-md px-3 py-2 cursor-pointer outline-none hover:bg-white/10"
+                        className="flex items-center gap-2 rounded-md px-3 py-2 cursor-pointer outline-none hover:bg-white/10 text-white"
                       >
                         <LogOut size={16} /> Cerrar sesión
                       </DropdownMenu.Item>

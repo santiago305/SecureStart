@@ -6,22 +6,34 @@ import { RoutesPaths } from "@/Router/config/routesPaths";
 import ShimmerLoader from "@/components/loadings.tsx/ShimmerLoader";
 import SiteHeader from "@/components/layout/SiteHeader";
 import SiteFooter from "@/components/layout/SiteFooter";
+import { listPeliculas } from "@/services/peliculasService";
 
 export default function Home() {
   // scroll al iniciar vista
   useEffect(() => { window.scrollTo({ top: 0, behavior: "smooth" }); }, []);
 
   const [homeQuery, setHomeQuery] = useState("");
+  const [movies, setMovies] = useState<Array<{ id: string; titulo: string; duracion_minutos: number; idioma: string | null }>>([]);
+  const [loading, setLoading] = useState(true);
 
-  const mockMovies = Array.from({ length: 20 }, (_, i) => ({
-    id: i + 1,
-    title: `Película ${i + 1}`,
-    duration: 100 + (i % 30),
-    genre: ["ACCIÓN", "DRAMA", "COMEDIA"][i % 3],
-  }));
-  const filtered = mockMovies.filter((m) =>
-    m.title.toLowerCase().includes(homeQuery.trim().toLowerCase())
-  );
+  useEffect(() => {
+    let ignore = false;
+    const load = async () => {
+      try {
+        setLoading(true);
+        const res = await listPeliculas({ titulo: homeQuery.trim() || undefined, limit: 12, order: 'DESC' });
+        if (!ignore) setMovies(res.data || []);
+      } catch {
+        if (!ignore) setMovies([]);
+      } finally {
+        if (!ignore) setLoading(false);
+      }
+    };
+    load();
+    return () => { ignore = true };
+  }, [homeQuery]);
+
+  // Nota: filtramos desde el backend usando el parámetro 'titulo'
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -89,21 +101,32 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
-            {filtered.map((m) => (
+            {loading && Array.from({ length: 12 }).map((_, i) => (
+              <article key={`s-${i}`} className="group rounded-xl bg-white/5 p-2 ring-1 ring-white/10">
+                <div className="aspect-2/3 w-full overflow-hidden rounded-lg bg-white/10">
+                  <ShimmerLoader />
+                </div>
+                <div className="mt-2">
+                  <div className="h-4 w-3/4 bg-white/10 rounded" />
+                  <div className="mt-1 h-3 w-1/2 bg-white/10 rounded" />
+                </div>
+              </article>
+            ))}
+            {!loading && movies.map((m) => (
               <article
                 key={m.id}
                 className="group rounded-xl bg-white/5 p-2 ring-1 ring-white/10 hover:bg-white/10"
               >
-                <div className="aspect-[2/3] w-full overflow-hidden rounded-lg bg-white/10">
+                <div className="aspect-2/3 w-full overflow-hidden rounded-lg bg-white/10">
                   <ShimmerLoader />
                 </div>
                 <div className="mt-2">
-                  <h3 className="line-clamp-1 text-sm font-medium">{m.title}</h3>
-                  <p className="text-xs text-white/60">{m.duration} min · {m.genre}</p>
+                  <h3 className="line-clamp-1 text-sm font-medium">{m.titulo}</h3>
+                  <p className="text-xs text-white/60">{m.duracion_minutos} min {m.idioma ? `· ${m.idioma.toUpperCase()}` : ''}</p>
                 </div>
               </article>
             ))}
-            {filtered.length === 0 && (
+            {!loading && movies.length === 0 && (
               <div className="col-span-full text-sm text-white/60">
                 Sin resultados para “{homeQuery}”.
               </div>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { checkTokenValidity, loginUser, logoutUser, registerUser } from "@/services/authService";
 import { LoginCredentials, RegisterCredentials } from "@/types/auth";
-import { PropsUrl } from "@/router/guards/typeGuards";
+import { PropsUrl } from "@/Router/guards/typeGuards";
 import { AuthContext } from "./AuthContext";
 import { checkExistingClient } from "@/services/clientsService";
 import { findOwnUser } from "@/services/userService";
@@ -21,6 +21,7 @@ export const AuthProvider = ({ children }: PropsUrl) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [hasClient, setHasClient] = useState<boolean | null>(null);
+  const [userName, setUserName] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   /**
@@ -38,9 +39,11 @@ export const AuthProvider = ({ children }: PropsUrl) => {
         return { success: false, message: "Token inválido o expirado" };
       }
       const response = await findOwnUser();
-      const role = response.rol;
+      const role = response?.data?.rol;
+      const name = (response?.data?.name ?? response?.data?.user_name ?? response?.data?.username ?? null) as string | null;
   
       setUserRole(role);
+      setUserName(name);
       setIsAuthenticated(true);
   
       if (role === 'user') {
@@ -55,6 +58,7 @@ export const AuthProvider = ({ children }: PropsUrl) => {
       console.error("Error en checkAuth:", error);
       setIsAuthenticated(false);
       setUserRole(null);
+      setUserName(null);
       setHasClient(null);
       setLoading(false);
       const message = error.response?.data?.message || "Error inesperado en autenticación";
@@ -72,17 +76,6 @@ export const AuthProvider = ({ children }: PropsUrl) => {
    */
   const login = async (payload: LoginCredentials): Promise<AuthResponse> => {
     try {
-      // Demo admin login (sin backend) para previsualizar el panel de admin
-      if (
-        payload.email === "admin@securestart.com" &&
-        payload.password === "admin123"
-      ) {
-        setIsAuthenticated(true);
-        setUserRole('admin');
-        setHasClient(null);
-        return { success: true, message: "Inicio de sesión como Admin (demo)", data: { role: 'admin' } };
-      }
-
       const data = await loginUser(payload);
       if (data?.access_token) {
         await checkAuth();
@@ -124,6 +117,7 @@ export const AuthProvider = ({ children }: PropsUrl) => {
     logoutUser()
     setIsAuthenticated(false);
     setUserRole(null);
+    setUserName(null);
     setHasClient(null);
   };
 
@@ -133,6 +127,7 @@ export const AuthProvider = ({ children }: PropsUrl) => {
         isAuthenticated,
         userRole,
         hasClient,
+        userName,
         login,
         clientUserRegister,
         logout,

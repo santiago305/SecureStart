@@ -22,7 +22,7 @@ function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
   const [showPwd, setShowPwd] = useState(false);
   const navigate = useNavigate();
   const { showFlash, clearFlash } = useFlashMessage();
-  const { login } = useAuth();
+  const { login, userRole } = useAuth();
   const { register, handleSubmit, formState: { errors } } = useForm<LoginCredentials>({
     resolver: zodResolver(LoginSchema),
   });
@@ -34,12 +34,8 @@ function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
       const response = await login(data);
       if (response.success) {
         showFlash(successResponse(response.message));
-        const role = response.data?.role as string | undefined;
-        if (role === 'admin') {
-          navigate(RoutesPaths.dashboardAdmin, { replace: true });
-        } else {
-          navigate(RoutesPaths.home, { replace: true });
-        }
+        // Redirigir al Home tras iniciar sesión
+        navigate(RoutesPaths.home, { replace: true });
       } else {
         showFlash(errorResponse(response.message));
       }

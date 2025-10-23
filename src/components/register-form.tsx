@@ -9,13 +9,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import FieldError from "./ui/FieldError";
-import { fullRegisterSchema } from "@/schemas/authSchemas";
-import { fullRegisterCredentials } from "@/types/auth";
+import { RegisterSchema } from "@/schemas/authSchemas";
+import { RegisterCredentials } from "@/types/auth";
 import { useAuth } from "@/hooks/useAuth";
 import { useFlashMessage } from "@/hooks/useFlashMessage";
 import { errorResponse, successResponse } from "@/common/utils/response";
 import { RoutesPaths } from "@/Router/config/routesPaths";
 import { useNavigate, Link } from "react-router-dom";
+import { z } from "zod";
 
 function RegisterForm({ className, ...props }: React.ComponentProps<"div">) {
   const [showPwd, setShowPwd] = useState(false);
@@ -27,8 +28,16 @@ function RegisterForm({ className, ...props }: React.ComponentProps<"div">) {
   const { showFlash, clearFlash } = useFlashMessage();
   const navigate = useNavigate();
 
-  const { register, handleSubmit, formState: { errors } } = useForm<fullRegisterCredentials>({
-    resolver: zodResolver(fullRegisterSchema),
+  // Esquema local con confirmación de contraseña
+  const RegisterWithConfirm = RegisterSchema.extend({
+    passwordConfirm: z.string().min(1, "La confirmación es obligatoria"),
+  }).refine((data) => data.password === (data as any).passwordConfirm, {
+    path: ["passwordConfirm"],
+    message: "Las contraseñas no coinciden",
+  });
+
+  const { register, handleSubmit, formState: { errors } } = useForm<RegisterCredentials & { passwordConfirm: string}>({
+    resolver: zodResolver(RegisterWithConfirm),
   });
 
   // Cálculo simple de entropía
@@ -52,11 +61,12 @@ function RegisterForm({ className, ...props }: React.ComponentProps<"div">) {
       ? { label: "Fuerte", color: "bg-green-500", pct: "85%" }
       : { label: "Muy fuerte", color: "bg-emerald-500", pct: "100%" };
 
-  const onSubmit = async (data: fullRegisterCredentials) => {
+  const onSubmit = async (data: RegisterCredentials & { passwordConfirm: string }) => {
     clearFlash();
     setSubmitting(true);
     try {
-      const res = await clientUserRegister(data);
+      const { name, email, password } = data;
+      const res = await clientUserRegister({ name, email, password });
       if (res.success) {
         showFlash(successResponse("Cuenta creada con éxito"));
         navigate(RoutesPaths.home);

@@ -38,3 +38,15 @@ export const API_CLIENTS_GROUP = {
   updateUser: (id: string) => `/clients/update/${id}`,
   deleteUser: (id: string) => `/clients/delete/${id}`,
 };
+
+/**
+ * Grupo de rutas para la gestión de películas.
+ */
+export const API_PELICULAS_GROUP = {
+  list: '/peliculas',
+  getById: (id: string) => `/peliculas/${id}`,
+  create: '/peliculas',
+  update: (id: string) => `/peliculas/${id}`,
+  remove: (id: string) => `/peliculas/remove/${id}`,
+  restore: (id: string) => `/peliculas/restore/${id}`,
+};

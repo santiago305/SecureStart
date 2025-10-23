@@ -3,12 +3,13 @@ import { Search, Delete, CornerDownLeft } from "lucide-react";
 import ShimmerLoader from "@/components/loadings.tsx/ShimmerLoader";
 import SiteHeader from "@/components/layout/SiteHeader";
 import SiteFooter from "@/components/layout/SiteFooter";
+import { listPeliculas } from "@/services/peliculasService";
 
 type Movie = {
-  id: number;
-  title: string;
-  duration: number;
-  genre: string;
+  id: string;
+  titulo: string;
+  duracion_minutos: number;
+  idioma: string | null;
 };
 
 const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
@@ -25,31 +26,29 @@ export default function Peliculas() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
-  // 🎬 Películas de ejemplo
-  const movies: Movie[] = useMemo(
-    () =>
-      Array.from({ length: 90 }).map((_, i) => {
-        const base = [
-          "Avatar","Batman","Casablanca","Dune","El Padrino","Forrest Gump",
-          "Gladiator","Her","Inception","Joker","Kill Bill","Logan","Matrix",
-          "Napoleon","Oppenheimer","Pulp Fiction","Quantum of Solace","Rocky",
-          "Star Wars","Titanic","Up","V for Vendetta","Warcraft","X-Men",
-          "Yesterday","Zodiac",
-        ][i % 26];
-        return {
-          id: i + 1,
-          title: `${base} ${Math.ceil((i + 1) / 26)}`,
-          duration: 100 + (i % 30),
-          genre: ["ACCIÓN", "DRAMA", "COMEDIA"][i % 3],
-        };
-      }),
-    []
-  );
-
   const [query, setQuery] = useState("");
+  const [movies, setMovies] = useState<Movie[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    let ignore = false;
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const res = await listPeliculas({ titulo: query, limit: 30, order: 'DESC' });
+        if (!ignore) setMovies(res.data || []);
+      } catch (e) {
+        if (!ignore) setMovies([]);
+      } finally {
+        if (!ignore) setLoading(false);
+      }
+    };
+    fetchData();
+    return () => { ignore = true };
+  }, [query]);
 
   const filtered = useMemo(
-    () => movies.filter((m) => m.title.toLowerCase().includes(query.toLowerCase())),
+    () => movies,
     [query, movies]
   );
 
@@ -197,7 +196,21 @@ export default function Peliculas() {
 
         {/* Lista de películas */}
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
-          {filtered.map((m) => (
+          {loading && Array.from({ length: 12 }).map((_, idx) => (
+            <article
+              key={`loader-${idx}`}
+              className="group rounded-xl bg-white/5 p-2 ring-1 ring-white/10"
+            >
+              <div className="aspect-[2/3] w-full overflow-hidden rounded-lg bg-white/10">
+                <ShimmerLoader />
+              </div>
+              <div className="mt-2">
+                <div className="h-4 w-3/4 bg-white/10 rounded" />
+                <div className="mt-1 h-3 w-1/2 bg-white/10 rounded" />
+              </div>
+            </article>
+          ))}
+          {!loading && filtered.map((m) => (
             <article
               key={m.id}
               className="group rounded-xl bg-white/5 p-2 ring-1 ring-white/10 hover:bg-white/10"
@@ -206,14 +219,12 @@ export default function Peliculas() {
                 <ShimmerLoader />
               </div>
               <div className="mt-2">
-                <h3 className="line-clamp-1 text-sm font-medium">{m.title}</h3>
-                <p className="text-xs text-white/60">
-                  {m.duration} min · {m.genre}
-                </p>
+                <h3 className="line-clamp-1 text-sm font-medium">{m.titulo}</h3>
+                <p className="text-xs text-white/60">{m.duracion_minutos} min {m.idioma ? `· ${m.idioma.toUpperCase()}` : ''}</p>
               </div>
             </article>
           ))}
-          {filtered.length === 0 && (
+          {!loading && filtered.length === 0 && (
             <div className="col-span-full text-sm text-white/60">
               Sin resultados para “{query}”.
             </div>

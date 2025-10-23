@@ -12,15 +12,14 @@ import { userData } from "@/pages/dashboard/app-dashboard/user-data";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
 import ShimmerLoader from "./loadings.tsx/ShimmerLoader";
 import { Link } from "react-router-dom";
-import { UrlPage } from "@/router/types/RouterTypes";
+import { RoutesPaths } from "@/Router/config/routesPaths";
 
 export default function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { userRole } = useAuth();
   const [data, setData] = useState<any>(null);
-  const dashboardRoute = UrlPage.find(route => route.name === "Dashboard");
 
   useEffect(() => {
-    if (userRole === "admin") {
+    if (userRole === "admin" || userRole === "moderator") {
       setData(adminData);
     } else if (userRole === "user") {
       setData(userData);
@@ -37,7 +36,7 @@ export default function AppSidebar({ ...props }: React.ComponentProps<typeof Sid
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:!p-1.5">
-              <Link to={`${dashboardRoute?.url}`}>
+              <Link to={RoutesPaths.dashboard}>
                 <IconInnerShadowTop className="!size-5" />
                 <span className="text-base font-semibold">LAPIN</span>
               </Link>
@@ -48,6 +47,15 @@ export default function AppSidebar({ ...props }: React.ComponentProps<typeof Sid
       <SidebarContent>
         <Suspense fallback={<div className="w-full h-full"><ShimmerLoader/></div>}>
           <NavMain items={data.navMain} />
+          {(userRole === "admin" || userRole === "moderator") && (
+            <SidebarMenu className="mt-2">
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link to={RoutesPaths.dashboardAdmin}>Películas (Admin)</Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          )}
           <NavDocuments items={data.documents} />
           <NavSecondary items={data.navSecondary} className="mt-auto" />
         </Suspense>
