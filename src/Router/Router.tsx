@@ -25,12 +25,14 @@ import { publicRoutes } from "./modules/PublicRoutes";
 import { clientsRoutes } from "./modules/ClientRoutes";
 import { authRoutes } from "./modules/AuthRoutes";
 import { dashboardRoutes } from "./modules/DashboardRoutes";
+import { privateRoutes } from "./guards/PrivateRoutes";
 
 export const router = createBrowserRouter([
   ...publicRoutes,
   ...authRoutes,
   ...clientsRoutes,
   ...dashboardRoutes,
+  ...privateRoutes,
   {
     path: "*",
     element: <ErrorPage />, // Ruta para manejar errores 404 (página no encontrada)

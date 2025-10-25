@@ -16,6 +16,7 @@ interface Pelicula {
   idioma: string | null;
   poster_url: string | null;
   trailer_url: string | null;
+  generos?: string[];
   deleted: boolean;
 }
 
@@ -28,7 +29,9 @@ const emptyForm: Partial<Pelicula> = {
   idioma: "",
   poster_url: "",
   trailer_url: "",
+  generos: [],
 };
+
 
 export default function PeliculasAdmin() {
   const [items, setItems] = useState<Pelicula[]>([]);
@@ -86,12 +89,14 @@ export default function PeliculasAdmin() {
       idioma: p.idioma || "",
       poster_url: p.poster_url || "",
       trailer_url: p.trailer_url || "",
+      generos: p.generos || [], 
     });
   };
 
+
   return (
     <div className="px-4 py-6 space-y-6">
-      <Card className="bg-black/60 border-white/10 text-white">
+      <Card className="bg-[#5a5a5a]/80 border-white/10 text-white">
         <CardHeader>
           <CardTitle className="text-2xl">Administración de Películas</CardTitle>
           <CardDescription className="text-white/70">Gestiona el catálogo: crear, editar, eliminar o restaurar.</CardDescription>
@@ -110,24 +115,73 @@ export default function PeliculasAdmin() {
           <form onSubmit={handleSubmit} className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 bg-black/40 border border-white/10 p-4 rounded-md">
             <div>
               <Label>Título</Label>
-              <Input value={form.titulo || ""} onChange={(e) => handleChange("titulo", e.target.value)} className="bg-black/40 border-white/10 text-white placeholder:text-white/40" />
+              <Input value={form.titulo || ""} onChange={(e) => handleChange("titulo", e.target.value)} className="bg-[#444]/60 border-white/10 text-white placeholder:text-white/70"/>
             </div>
             <div>
               <Label>Idioma</Label>
-              <Input value={form.idioma || ""} onChange={(e) => handleChange("idioma", e.target.value)} className="bg-black/40 border-white/10 text-white placeholder:text-white/40" />
+              <Input value={form.idioma || ""} onChange={(e) => handleChange("idioma", e.target.value)} className="bg-[#444]/60 border-white/10 text-white placeholder:text-white/70"/>
             </div>
             <div>
               <Label>Fecha estreno</Label>
-              <Input type="date" value={form.fecha_estreno || ""} onChange={(e) => handleChange("fecha_estreno", e.target.value)} className="bg-black/40 border-white/10 text-white placeholder:text-white/40" />
+              <Input type="date" value={form.fecha_estreno || ""} onChange={(e) => handleChange("fecha_estreno", e.target.value)} className="bg-[#444]/60 border-white/10 text-white placeholder:text-white/70" />
             </div>
             <div>
               <Label>Duración (min)</Label>
               <Input type="number" value={form.duracion_minutos ?? 0} onChange={(e) => handleChange("duracion_minutos", Number(e.target.value))} className="bg-black/40 border-white/10 text-white placeholder:text-white/40" />
             </div>
             <div>
-              <Label>Rating</Label>
-              <Input type="number" step="0.1" value={form.rating ?? 0} onChange={(e) => handleChange("rating", Number(e.target.value))} className="bg-black/40 border-white/10 text-white placeholder:text-white/40" />
+              <Label>Rating (0 - 10)</Label>
+              <Input
+                type="number"
+                min={0}
+                max={10}
+                step={0.1}
+                value={form.rating ?? ""}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  const num = parseFloat(val);
+
+                  // Permitir vacío temporal mientras se escribe
+                  if (val === "") {
+                    handleChange("rating", undefined);
+                    return;
+                  }
+
+                  // Validaciones
+                  if (num > 10) {
+                    toast.warning("El rating debe ser menor o igual a 10");
+                    handleChange("rating", 10);
+                  } else if (num < 0) {
+                    toast.warning("El rating debe ser mayor o igual a 0");
+                    handleChange("rating", 0);
+                  } else {
+                    handleChange("rating", num);
+                  }
+                }}
+                className="bg-black/40 border-white/10 text-white placeholder:text-white/40"
+              />
             </div>
+            <div>
+              <Label>Géneros (separados por coma)</Label>
+              <input
+                type="text"
+                inputMode="text"
+                placeholder="Ej: Acción, Drama, Ciencia ficción"
+                value={form.generos?.join(", ") || ""}
+                onChange={(e) =>
+                  handleChange(
+                    "generos",
+                    e.target.value
+                      .split(",")
+                      .map((g) => g.trim())
+                      .filter((g) => g.length > 0)
+                  )
+                }
+                className="bg-black/40 border-white/10 text-white placeholder:text-white/40 w-full p-2 rounded-md outline-none"
+              />
+            </div>
+
+
             <div className="md:col-span-3">
               <Label>Descripción</Label>
               <Input value={form.descripcion || ""} onChange={(e) => handleChange("descripcion", e.target.value)} className="bg-black/40 border-white/10 text-white placeholder:text-white/40" />
@@ -153,8 +207,10 @@ export default function PeliculasAdmin() {
               <thead className="text-left bg-black/40">
                 <tr className="border-b border-white/10">
                   <th className="py-2 pr-4 font-semibold text-white/80">Título</th>
+                  <th className="py-2 pr-4 font-semibold text-white/80">Descripción</th>
                   <th className="py-2 pr-4 font-semibold text-white/80">Idioma</th>
                   <th className="py-2 pr-4 font-semibold text-white/80">Duración</th>
+                  <th className="py-2 pr-4 font-semibold text-white/80">Géneros</th>
                   <th className="py-2 pr-4 font-semibold text-white/80">Rating</th>
                   <th className="py-2 pr-4 font-semibold text-white/80">Estado</th>
                   <th className="py-2 pr-4 font-semibold text-white/80">Acciones</th>
@@ -164,8 +220,12 @@ export default function PeliculasAdmin() {
                 {items.map((p) => (
                   <tr key={p.id} className="border-b border-white/5 hover:bg-white/5">
                     <td className="py-2 pr-4 font-medium">{p.titulo}</td>
+                    <td className="py-2 pr-4">{p.descripcion || "-"}</td>
                     <td className="py-2 pr-4">{p.idioma || "-"}</td>
                     <td className="py-2 pr-4">{p.duracion_minutos} min</td>
+                    <td className="py-2 pr-4">
+                      {p.generos?.length ? p.generos.join(", ") : "-"}
+                    </td>
                     <td className="py-2 pr-4">{p.rating}</td>
                     <td className="py-2 pr-4">
                       <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] ${p.deleted ? 'bg-red-500/20 text-red-300' : 'bg-emerald-500/20 text-emerald-300'}`}>
@@ -184,7 +244,7 @@ export default function PeliculasAdmin() {
                 ))}
                 {items.length === 0 && !loading && (
                   <tr>
-                    <td className="py-4 text-white/70" colSpan={6}>Sin resultados</td>
+                    <td className="py-4 text-white/70" colSpan={8}>Sin resultados</td>
                   </tr>
                 )}
               </tbody>

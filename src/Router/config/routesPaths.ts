@@ -1,27 +1,29 @@
 export const RoutesPaths = {
   // Públicas
   home: "/",
-  about: "/about",
-  contact: "/contact",
+  about: "/nosotros",
+  contact: "/contacto",
+  profile: "/perfil",
 
   // Cine
-  movies: "/movies",
-  categories: "/categories",
-  news: "/news",
-  newsDetail: (id: string | number = ":id") => `/news/${id}`,
+  movies: "/peliculas",
+  movieDetail: (id: string | number = ":id") => `/peliculas/${id}`,
+  categories: "/categorias",
+  news: "/noticias",
+  newsDetail: (id: string | number = ":id") => `/noticias/${id}`,
 
   // Auth
   login: "/login",
   register: "/register",
-  clientsRegister: "/clients-register",
+  clientsRegister: "/registro-clientes",
 
   // Dashboard
   dashboard: "/dashboard",
   dashboardAdmin: "/dashboard/admin",
-  dashboardProducts: "/dashboard/products",
-  dashboardProductShow: (id: string) => `/dashboard/products/${id}`,
-  dashboardProfile: "/dashboard/profile",
-  dashboardSettings: "/dashboard/settings",
+  dashboardProducts: "/dashboard/productos",
+  dashboardProductShow: (id: string) => `/dashboard/productos/${id}`,
+  dashboardProfile: "/dashboard/perfil",
+  dashboardSettings: "/dashboard/configuracion",
 } as const;
 
 export type RouteName = keyof typeof RoutesPaths;

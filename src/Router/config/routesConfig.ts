@@ -12,6 +12,9 @@ export const routesConfig: RouteMetadata[] = [
   { path: RoutesPaths.contact, name: "Contact", isPublic: true },
   { path: "/products", name: "Products", isPublic: true },
   { path: "/products/:product", name: "Product.Show", isPublic: true },
+  { path: RoutesPaths.movies, name: "Movies", isPublic: true },
+  { path: RoutesPaths.movieDetail(), name: "Movie.Detail", isPublic: true },
+
 
   // 🔐 Rutas de autenticación
   { path: "/login", name: "Login", isAuthRoute: true },

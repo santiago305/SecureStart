@@ -13,6 +13,7 @@ import { lazy } from "react";
 
 const Home = lazy(() => import("@/pages/Home"));
 const Peliculas = lazy(() => import("@/pages/Peliculas"));
+const MovieDetail = lazy(() => import("@/pages/MovieDetail"));
 const Categorias = lazy(() => import("@/pages/Categorias"));
 const Noticias = lazy(() => import("@/pages/Noticias"));
 const NoticiasDetalle = lazy(() => import("@/pages/NoticiasDetalle"));
@@ -23,6 +24,7 @@ const ErrorPage = lazy(() => import("@/pages/Error404"));
 export const publicRoutes: RouteObject[] = [
   { path: RoutesPaths.home, element: <Home />, errorElement: <ErrorPage /> },
   { path: RoutesPaths.movies, element: <Peliculas />, errorElement: <ErrorPage /> },
+  { path: RoutesPaths.movieDetail(), element: <MovieDetail />, errorElement: <ErrorPage /> },
   { path: RoutesPaths.categories, element: <Categorias />, errorElement: <ErrorPage /> },
   { path: RoutesPaths.news, element: <Noticias />, errorElement: <ErrorPage /> },
   { path: RoutesPaths.newsDetail(), element: <NoticiasDetalle />, errorElement: <ErrorPage /> },

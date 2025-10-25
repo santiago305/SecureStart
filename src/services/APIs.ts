@@ -13,6 +13,7 @@ export const API_AUTH_GROUP = {
  * Grupo de rutas para la gestión de usuarios.
  */
 export const API_USERS_GROUP = {
+  base: "/users", 
   createUser: '/users/create',
   findAll: '/users/findAll',
   findActives: '/users/actives',
@@ -50,3 +51,16 @@ export const API_PELICULAS_GROUP = {
   remove: (id: string) => `/peliculas/remove/${id}`,
   restore: (id: string) => `/peliculas/restore/${id}`,
 };
+
+/**
+ * Grupo de rutas para la gestión de noticias.
+ */
+export const API_NOTICIAS_GROUP = {
+  list: "/noticias",
+  getById: (id: string) => `/noticias/${id}`,
+  create: "/noticias",
+  update: (id: string) => `/noticias/${id}`,
+  remove: (id: string) => `/noticias/${id}`,
+  restore: (id: string) => `/noticias/restore/${id}`,
+};
+

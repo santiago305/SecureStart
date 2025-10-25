@@ -39,19 +39,24 @@ export const AuthProvider = ({ children }: PropsUrl) => {
         return { success: false, message: "Token inválido o expirado" };
       }
       const response = await findOwnUser();
-      const role = response?.data?.rol;
-      const name = (response?.data?.name ?? response?.data?.user_name ?? response?.data?.username ?? null) as string | null;
-  
-      setUserRole(role);
-      setUserName(name);
+      const user = response?.data || {};
+      const rawRole =
+        user.role?.description?.toLowerCase() ||
+        user.role?.name?.toLowerCase() ||
+        user.rol?.toLowerCase() ||
+        "user";
+
+      setUserRole(rawRole);
+      setUserName(user.name ?? user.user_name ?? user.username ?? null);
       setIsAuthenticated(true);
   
-      if (role === 'user') {
+      if (rawRole === 'user') {
         const exists = await checkExistingClient();
         setHasClient(exists);
       } else {
         setHasClient(null);
       }
+
       setLoading(false);
       return { success: true, message: "Autenticación validada" };
     } catch (error: any) {
