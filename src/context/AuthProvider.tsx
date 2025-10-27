@@ -82,7 +82,11 @@ export const AuthProvider = ({ children }: PropsUrl) => {
   const login = async (payload: LoginCredentials): Promise<AuthResponse> => {
     try {
       const data = await loginUser(payload);
+
       if (data?.access_token) {
+        // 🔹 Guardar token correctamente (solo el string)
+        localStorage.setItem("token", data.access_token);
+
         await checkAuth();
         return { success: true, message: "Inicio de sesión exitoso" };
       } else {
@@ -104,6 +108,9 @@ export const AuthProvider = ({ children }: PropsUrl) => {
     try {
       const data = await registerUser(payload);
       if (data?.access_token) {
+        // ⚡ Guardar token limpio en localStorage
+        localStorage.setItem("token", data.access_token);
+
         await checkAuth();
         return { success: true, message: "Registro exitoso" };
       } else {
@@ -114,6 +121,7 @@ export const AuthProvider = ({ children }: PropsUrl) => {
       return { success: false, message };
     }
   };
+
 
   /**
    * Cierra la sesión actual del usuario.

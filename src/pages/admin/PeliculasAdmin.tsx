@@ -16,6 +16,7 @@ interface Pelicula {
   idioma: string | null;
   poster_url: string | null;
   trailer_url: string | null;
+  url_pelicula: string | null;
   generos?: string[];
   deleted: boolean;
 }
@@ -29,6 +30,7 @@ const emptyForm: Partial<Pelicula> = {
   idioma: "",
   poster_url: "",
   trailer_url: "",
+  url_pelicula: "",
   generos: [],
 };
 
@@ -65,6 +67,7 @@ export default function PeliculasAdmin() {
       idioma: form.idioma || null,
       poster_url: form.poster_url || null,
       trailer_url: form.trailer_url || null,
+      url_pelicula: form.url_pelicula || null,
     };
     if (editingId) {
       await updatePelicula(editingId, payload);
@@ -89,6 +92,7 @@ export default function PeliculasAdmin() {
       idioma: p.idioma || "",
       poster_url: p.poster_url || "",
       trailer_url: p.trailer_url || "",
+      url_pelicula: p.url_pelicula || "",
       generos: p.generos || [], 
     });
   };
@@ -130,7 +134,7 @@ export default function PeliculasAdmin() {
               <Input type="number" value={form.duracion_minutos ?? 0} onChange={(e) => handleChange("duracion_minutos", Number(e.target.value))} className="bg-black/40 border-white/10 text-white placeholder:text-white/40" />
             </div>
             <div>
-              <Label>Rating (0 - 10)</Label>
+              <Label>Rating</Label>
               <Input
                 type="number"
                 min={0}
@@ -163,25 +167,22 @@ export default function PeliculasAdmin() {
             </div>
             <div>
               <Label>Géneros (separados por coma)</Label>
-              <input
+              <Input
                 type="text"
-                inputMode="text"
                 placeholder="Ej: Acción, Drama, Ciencia ficción"
                 value={form.generos?.join(", ") || ""}
-                onChange={(e) =>
-                  handleChange(
-                    "generos",
-                    e.target.value
-                      .split(",")
-                      .map((g) => g.trim())
-                      .filter((g) => g.length > 0)
-                  )
-                }
-                className="bg-black/40 border-white/10 text-white placeholder:text-white/40 w-full p-2 rounded-md outline-none"
+                onChange={(e) => {
+                  const value = e.target.value;
+                  // No bloquea la coma, solo limpia espacios
+                  const genres = value
+                    .split(",")
+                    .map((g) => g.trim())
+                    .filter((g) => g.length > 0);
+                  handleChange("generos", genres);
+                }}
+                className="bg-black/40 border-white/10 text-white placeholder:text-white/40 w-full"
               />
             </div>
-
-
             <div className="md:col-span-3">
               <Label>Descripción</Label>
               <Input value={form.descripcion || ""} onChange={(e) => handleChange("descripcion", e.target.value)} className="bg-black/40 border-white/10 text-white placeholder:text-white/40" />
@@ -193,6 +194,15 @@ export default function PeliculasAdmin() {
             <div>
               <Label>Trailer URL</Label>
               <Input value={form.trailer_url || ""} onChange={(e) => handleChange("trailer_url", e.target.value)} className="bg-black/40 border-white/10 text-white placeholder:text-white/40" />
+            </div>
+            <div>
+              <Label>URL Película</Label>
+              <Input
+                value={form.url_pelicula || ""}
+                onChange={(e) => handleChange("url_pelicula", e.target.value)}
+                className="bg-black/40 border-white/10 text-white placeholder:text-white/40"
+                placeholder="https://..."
+              />
             </div>
             <div className="md:col-span-3 flex gap-2">
               <Button type="submit" className="bg-[#1565C0] hover:bg-[#1E88E5]">{editingId ? "Guardar cambios" : "Crear"}</Button>
@@ -208,6 +218,7 @@ export default function PeliculasAdmin() {
                 <tr className="border-b border-white/10">
                   <th className="py-2 pr-4 font-semibold text-white/80">Título</th>
                   <th className="py-2 pr-4 font-semibold text-white/80">Descripción</th>
+                  <th className="py-2 pr-4 font-semibold text-white/80">URL</th>
                   <th className="py-2 pr-4 font-semibold text-white/80">Idioma</th>
                   <th className="py-2 pr-4 font-semibold text-white/80">Duración</th>
                   <th className="py-2 pr-4 font-semibold text-white/80">Géneros</th>
@@ -221,6 +232,20 @@ export default function PeliculasAdmin() {
                   <tr key={p.id} className="border-b border-white/5 hover:bg-white/5">
                     <td className="py-2 pr-4 font-medium">{p.titulo}</td>
                     <td className="py-2 pr-4">{p.descripcion || "-"}</td>
+                    <td className="py-2 pr-4">
+                      {p.url_pelicula ? (
+                        <a
+                          href={p.url_pelicula}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-400 underline"
+                        >
+                          Ver
+                        </a>
+                      ) : (
+                        "-"
+                      )}
+                    </td>
                     <td className="py-2 pr-4">{p.idioma || "-"}</td>
                     <td className="py-2 pr-4">{p.duracion_minutos} min</td>
                     <td className="py-2 pr-4">

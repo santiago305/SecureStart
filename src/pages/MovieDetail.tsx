@@ -19,7 +19,7 @@ type Pelicula = {
   generos?: string[] | null;
   poster_url?: string | null;
   trailer_url?: string | null;
-  movie_url?: string | null;
+  url_pelicula?: string | null;
 };
 
 function toYouTubeEmbed(url: string | null | undefined) {
@@ -180,12 +180,12 @@ export default function MovieDetail() {
             <div className="aspect-video w-full bg-black">
             {loading && <ShimmerLoader />}
 
-            {!loading && movie?.movie_url && (
+            {!loading && movie?.url_pelicula && (
                 <>
-                {movie.movie_url.includes("youtube.com") || movie.movie_url.includes("youtu.be") ? (
+                {movie.url_pelicula.includes("youtube.com") || movie.url_pelicula.includes("youtu.be") ? (
                     // @ts-ignore
                     <ReactPlayer
-                    url={movie.movie_url}
+                    url={movie.url_pelicula}
                     controls
                     width="100%"
                     height="100%"
@@ -193,18 +193,19 @@ export default function MovieDetail() {
                     />
 
                 ) : (
-                    <video
-                    src={movie.movie_url}
-                    controls
-                    preload="metadata"
-                    poster={movie.poster_url || undefined}
-                    className="w-full h-full"
-                    />
+                    <iframe
+                      src={movie.url_pelicula}
+                      width="100%"
+                      height="100%"
+                      frameBorder="0"
+                      scrolling="no"
+                      allowFullScreen
+                    ></iframe>
                 )}
                 </>
             )}
 
-            {!loading && !movie?.movie_url && (
+            {!loading && !movie?.url_pelicula && (
                 <div className="flex items-center justify-center h-full text-white/60 text-sm">
                 No hay fuente de video disponible.
                 </div>

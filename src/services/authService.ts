@@ -54,10 +54,12 @@ export const checkTokenValidity = async () => {
 }
 export const refresh_token = async () => {
   try {
-    const response = await axiosInstance.get(API_AUTH_GROUP.refreshToken)
-    return response.data
+    const response = await axiosInstance.get(API_AUTH_GROUP.refreshToken);
+    // ⚡ devuelve solo el token en texto
+    return response.data?.access_token || null;
   } catch (error) {
-    return false 
+    console.error("Error al refrescar token:", error);
+    return null;
   }
 }
 export const logoutUser = async () => {

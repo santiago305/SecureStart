@@ -182,7 +182,7 @@ export default function AdminNoticias() {
             </div>
 
             <div>
-                <Label>Rating (0 - 10)</Label>
+                <Label>Rating</Label>
                 <Input
                     type="number"
                     min={0}

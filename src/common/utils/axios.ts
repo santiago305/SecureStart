@@ -10,9 +10,12 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
-    if (token) {
+
+    // 🔹 Si el token es tipo objeto JSON, lo arreglamos
+    if (token && token !== "[object Object]") {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
     return config;
   },
   (error) => Promise.reject(error)
